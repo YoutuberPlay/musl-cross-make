@@ -1,0 +1,47 @@
+name: Build aarch64-linux-musl toolchain
+
+on:
+  push:
+    branches: [ android-aarch64-php-patches ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make autoconf automake libtool m4 wget gzip bzip2 bison g++ git cmake pkg-config re2c ca-certificates
+
+      - name: Configure
+        run: |
+          echo "TARGET = aarch64-linux-musl" > config.mak
+          echo "OUTPUT = /usr/local" >> config.mak
+
+      - name: Build
+        run: make -j$(nproc)
+
+      - name: Install
+        run: sudo make install
+
+      - name: Verify
+        run: |
+          which aarch64-linux-musl-gcc
+          aarch64-linux-musl-gcc --version
+
+      - name: Package
+        run: |
+          mkdir -p artifact
+          cp /usr/local/bin/aarch64-linux-musl-* artifact/ 2>/dev/null || true
+          cp -r /usr/local/aarch64-linux-musl artifact/
+          tar -czf aarch64-linux-musl-toolchain.tar.gz -C artifact .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aarch64-linux-musl-toolchain
+          path: aarch64-linux-musl-toolchain.tar.gz
+          retention-days: 30
