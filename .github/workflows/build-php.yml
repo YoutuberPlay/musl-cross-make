@@ -18,9 +18,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-              sudo apt-get update
-              sudo apt-get install -y make autoconf automake libtool libtool-bin m4 wget gzip bzip2 bison g++ git cmake pkg-config re2c ca-certificates
-    
+          sudo apt-get update
+          sudo apt-get install -y make autoconf automake libtool libtool-bin m4 wget gzip bzip2 bison g++ git cmake pkg-config re2c ca-certificates
+
       - name: Pre-download sources
         working-directory: musl-cross-make
         run: |
@@ -58,18 +58,25 @@ jobs:
       - name: Build PHP 8.4
         working-directory: PHP-Binaries
         run: |
+          CFLAGS="-fno-unwind-tables -fno-asynchronous-unwind-tables" \
+          LDFLAGS="-Wl,--gc-sections" \
           ./compile.sh -t android-aarch64 -x -j$(nproc) -P5 -z 8.4
+
+      - name: Strip PHP binary
+        run: |
+          aarch64-linux-musl-strip --strip-all PHP-Binaries/bin/php7/bin/php
+          ls -lh PHP-Binaries/bin/php7/bin/php
 
       - name: Package PHP
         run: |
           mkdir -p artifact
           cp -r PHP-Binaries/bin/php7 artifact/php8.4
-          tar -czf php-8.4-android-aarch64.tar.gz -C artifact .
-          ls -lh php-8.4-android-aarch64.tar.gz
+          tar -cJf php-8.4-android-aarch64.tar.xz -C artifact .
+          ls -lh php-8.4-android-aarch64.tar.xz
 
       - name: Upload PHP artifact
         uses: actions/upload-artifact@v4
         with:
           name: php-8.4-android-aarch64
-          path: php-8.4-android-aarch64.tar.gz
+          path: php-8.4-android-aarch64.tar.xz
           retention-days: 30
