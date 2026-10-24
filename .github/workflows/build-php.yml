@@ -18,9 +18,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y make autoconf automake libtool m4 wget gzip bzip2 bison g++ git cmake pkg-config re2c ca-certificates
-
+              sudo apt-get update
+              sudo apt-get install -y make autoconf automake libtool libtool-bin m4 wget gzip bzip2 bison g++ git cmake pkg-config re2c ca-certificates
+    
       - name: Pre-download sources
         working-directory: musl-cross-make
         run: |
