@@ -53,7 +53,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: pmmp/PHP-Binaries
-          ref: master
           path: PHP-Binaries
 
       - name: Build PHP 8.4
