@@ -1,8 +1,6 @@
-diff --git a/include/stdio.h b/include/stdio.h
-index 1234567..abcdefg 100644
 --- a/include/stdio.h
 +++ b/include/stdio.h
-@@ -21,7 +21,7 @@ extern "C" {
+@@ -19,7 +19,7 @@ extern "C" {
  
  #define FILE struct _IO_FILE
  
@@ -11,23 +9,34 @@ index 1234567..abcdefg 100644
  #define L_tmpnam 20
  #define TMP_MAX 10000
  
-diff --git a/src/stdio/tempnam.c b/src/stdio/tempnam.c
-index 2e1a3b4..5f6g7h8 100644
 --- a/src/stdio/tempnam.c
 +++ b/src/stdio/tempnam.c
-@@ -9,15 +9,11 @@ char *tempnam(const char *dir, const char *pfx)
-  size_t l, pl;
-  char *s;
-  struct stat st;
+@@ -1,20 +1,24 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+ #include <errno.h>
+ #include <sys/stat.h>
+ #include <unistd.h>
  
-  if (!pfx) pfx = "";
-  pl = strlen(pfx);
+ char *tempnam(const char *dir, const char *pfx)
+ {
+ 	size_t l, pl;
+ 	char *s;
+ 	struct stat st;
++	static int tmpdir_ready = 0;
  
-- if (dir && !stat(dir, &st) && S_ISDIR(st.st_mode)) ;
-- else if ((dir = getenv("TMPDIR")) && !stat(dir, &st) && S_ISDIR(st.st_mode)) ;
-- else dir = P_tmpdir;
-+ mkdir(P_tmpdir, 0770);
-+ dir = P_tmpdir;
+ 	if (!pfx) pfx = "";
+ 	pl = strlen(pfx);
  
-  l = strlen(dir);
-  s = malloc(l+1+pl+6+1);
+-	if (dir && !stat(dir, &st) && S_ISDIR(st.st_mode)) ;
+-	else if ((dir = getenv("TMPDIR")) && !stat(dir, &st) && S_ISDIR(st.st_mode)) ;
+-	else dir = P_tmpdir;
++	if (!tmpdir_ready) {
++		mkdir(P_tmpdir, 0770);
++		tmpdir_ready = 1;
++	}
++	dir = P_tmpdir;
+ 
+ 	l = strlen(dir);
+ 	s = malloc(l+1+pl+6+1);
