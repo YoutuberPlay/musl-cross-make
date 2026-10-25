@@ -7,7 +7,7 @@ index ceabf08..8de9c8b 100644
  	if (search) *search = 0;
  
 -	f = __fopen_rb_ca("/etc/resolv.conf", &_f, _buf, sizeof _buf);
-+	const char *custom = getenv("LESMI_RESOLV_CONF_DIR");
++	const char *custom = getenv("MCSERVPRO_CONF_DIR");
 +	const char *path = custom ? custom : "/etc/resolv.conf";
 +	f = __fopen_rb_ca(path, &_f, _buf, sizeof _buf);
  	if (!f) switch (errno) {
