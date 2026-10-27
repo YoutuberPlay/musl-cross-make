@@ -1,4 +1,4 @@
-name: Build aarch64 PHP for Android
+name: Build aarch64 PHP for Android (PM4)
 
 on:
   push:
@@ -49,35 +49,36 @@ jobs:
           which aarch64-linux-musl-gcc
           aarch64-linux-musl-gcc --version
 
-      - name: Checkout PHP-Binaries
+      - name: Checkout PHP-Binaries (pm4 branch)
         uses: actions/checkout@v4
         with:
           repository: YoutuberPlay/PHP-Binaries
+          ref: pm4
           path: PHP-Binaries
 
-      - name: Build all PHP versions (PM5)
+      - name: Build all PHP versions (PM4)
         working-directory: PHP-Binaries
         run: |
-          mkdir -p ../artifact/pm5
-          for ver in 8.1 8.2 8.3 8.4 8.5; do
-            echo "=== Building PHP $ver (PM5) ==="
+          mkdir -p ../artifact/pm4
+          for ver in 8.0 8.1 8.2; do
+            echo "=== Building PHP $ver (PM4) ==="
             CFLAGS="-fno-unwind-tables -fno-asynchronous-unwind-tables" \
             LDFLAGS="-Wl,--gc-sections" \
-            ./compile.sh -t android-aarch64 -x -j$(nproc) -P5 -g -z "$ver" || { echo "FAIL $ver"; continue; }
+            ./compile.sh -t android-aarch64 -x -j$(nproc) -P4 -g -z "$ver" || { echo "FAIL $ver"; continue; }
             aarch64-linux-musl-strip --strip-all bin/php7/bin/php
-            cp bin/php7/bin/php "../artifact/pm5/php_v${ver}"
-            ls -lh "../artifact/pm5/php_v${ver}"
+            cp bin/php7/bin/php "../artifact/pm4/php_v${ver}"
+            ls -lh "../artifact/pm4/php_v${ver}"
           done
 
       - name: Package all binaries
         run: |
-          tar -cJf php-android-aarch64-pm5.tar.xz -C artifact .
-          ls -lh php-android-aarch64-pm5.tar.xz
+          tar -cJf php-android-aarch64-pm4.tar.xz -C artifact .
+          ls -lh php-android-aarch64-pm4.tar.xz
           find artifact -type f -ls
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: php-android-aarch64-pm5
-          path: php-android-aarch64-pm5.tar.xz
+          name: php-android-aarch64-pm4
+          path: php-android-aarch64-pm4.tar.xz
           retention-days: 30
