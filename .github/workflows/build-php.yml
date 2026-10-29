@@ -25,10 +25,10 @@ jobs:
         working-directory: musl-cross-make
         run: |
           mkdir -p sources
-          wget --no-check-certificate -O sources/gcc-10.3.0.tar.xz https://ftp.gnu.org/gnu/gcc/gcc-10.3.0/gcc-10.3.0.tar.xz
-          wget --no-check-certificate -O sources/binutils-2.44.tar.gz https://ftp.gnu.org/gnu/binutils/binutils-2.44.tar.gz
-          wget --no-check-certificate -O sources/gmp-6.3.0.tar.xz https://ftp.gnu.org/gnu/gmp/gmp-6.3.0.tar.xz
-          wget --no-check-certificate -O sources/musl-1.2.5.tar.gz https://musl.libc.org/releases/musl-1.2.5.tar.gz
+          wget --no-check-certificate --timeout=120 --tries=3 -O sources/gcc-10.3.0.tar.xz https://ftpmirror.gnu.org/gnu/gcc/gcc-10.3.0/gcc-10.3.0.tar.xz
+          wget --no-check-certificate --timeout=120 --tries=3 -O sources/binutils-2.44.tar.gz https://ftpmirror.gnu.org/gnu/binutils/binutils-2.44.tar.gz
+          wget --no-check-certificate --timeout=120 --tries=3 -O sources/gmp-6.3.0.tar.xz https://ftpmirror.gnu.org/gnu/gmp/gmp-6.3.0.tar.xz
+          wget --no-check-certificate --timeout=120 --tries=3 -O sources/musl-1.2.5.tar.gz https://musl.libc.org/releases/musl-1.2.5.tar.gz
 
       - name: Configure toolchain
         working-directory: musl-cross-make
