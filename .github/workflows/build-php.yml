@@ -1,4 +1,4 @@
-name: Build aarch64 PHP for Android (PM4)
+name: Build aarch64 PHP for Android (PM3 / PHP 7.x)
 
 on:
   push:
@@ -49,50 +49,50 @@ jobs:
           which aarch64-linux-musl-gcc
           aarch64-linux-musl-gcc --version
 
-      - name: Checkout PHP-Binaries (pm4 branch)
+      - name: Checkout PHP-Binaries (pm3 branch)
         uses: actions/checkout@v4
         with:
           repository: YoutuberPlay/PHP-Binaries
-          ref: pm4
+          ref: pm3
           path: PHP-Binaries
 
-      - name: Build all PHP versions (PM4)
+      - name: Build all PHP versions (PM3)
         working-directory: PHP-Binaries
         run: |
-          mkdir -p ../artifact/pm4
-          for ver in 8.0 8.1 8.2; do
-            echo "=== Building PHP $ver (PM4) ==="
+          mkdir -p ../artifact/pm3
+          for ver in 7.0 7.2 7.3 7.4; do
+            echo "=== Building PHP $ver (PM3) ==="
             CFLAGS="-fno-unwind-tables -fno-asynchronous-unwind-tables" \
             LDFLAGS="-Wl,--gc-sections" \
-            ./compile.sh -t android-aarch64 -x -j$(nproc) -P4 -g -z "$ver"
+            ./compile-7x.sh -t android-aarch64 -x -j$(nproc) -P3 -g -z "$ver"
             aarch64-linux-musl-strip --strip-all bin/php7/bin/php
-            cp bin/php7/bin/php "../artifact/pm4/php_v${ver}"
-            ls -lh "../artifact/pm4/php_v${ver}"
-            cp install.log "../artifact/pm4/install-${ver}.log"
+            cp bin/php7/bin/php "../artifact/pm3/php_v${ver}"
+            ls -lh "../artifact/pm3/php_v${ver}"
+            cp install.log "../artifact/pm3/install-${ver}.log"
           done
 
       - name: Upload build logs (always)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: build-logs-pm4
+          name: build-logs-pm3
           path: |
             PHP-Binaries/install.log
-            PHP-Binaries/artifact/pm4/*.log
+            PHP-Binaries/artifact/pm3/*.log
           if-no-files-found: warn
           retention-days: 14
 
       - name: Package all binaries
         if: success()
         run: |
-          tar -cJf php-android-aarch64-pm4.tar.xz -C artifact .
-          ls -lh php-android-aarch64-pm4.tar.xz
+          tar -cJf php-android-aarch64-pm3.tar.xz -C artifact .
+          ls -lh php-android-aarch64-pm3.tar.xz
           find artifact -type f -ls
 
       - name: Upload artifact
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: php-android-aarch64-pm4
-          path: php-android-aarch64-pm4.tar.xz
+          name: php-android-aarch64-pm3
+          path: php-android-aarch64-pm3.tar.xz
           retention-days: 30
