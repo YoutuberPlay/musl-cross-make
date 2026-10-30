@@ -60,7 +60,7 @@ jobs:
         working-directory: PHP-Binaries
         run: |
           mkdir -p ../artifact/pm3
-          for ver in 7.0 7.2 7.3 7.4; do
+          for ver in 7.0 7.2; do
             echo "=== Building PHP $ver (PM3) ==="
             CFLAGS="-fno-unwind-tables -fno-asynchronous-unwind-tables" \
             LDFLAGS="-Wl,--gc-sections" \
