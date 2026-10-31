@@ -65,10 +65,15 @@ jobs:
             CFLAGS="-fno-unwind-tables -fno-asynchronous-unwind-tables" \
             LDFLAGS="-Wl,--gc-sections" \
             ./compile.sh -t android-aarch64 -x -j$(nproc) -P3 -g -z "$ver"
+            
             aarch64-linux-musl-strip --strip-all bin/php7/bin/php
             cp bin/php7/bin/php "../artifact/pm3/php_v${ver}"
             ls -lh "../artifact/pm3/php_v${ver}"
-            cp install.log "../artifact/pm3/install-${ver}.log"
+            
+            # Копируем лог только если он существует
+            if [ -f install.log ]; then
+              cp install.log "../artifact/pm3/install-${ver}.log"
+            fi
           done
 
       - name: Upload build logs (always)
